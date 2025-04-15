@@ -8,6 +8,7 @@
     <div class="controls">
       <button @click="setTime">セット</button>
       <button @click="startTimer">スタート</button>
+      <button @click="stopTimer">ストップ</button>
     </div>
   </div>
 </template>
@@ -36,6 +37,12 @@ function startTimer() {
     }
   }, 1000);    //1000と書くことで、1秒ごとに動くようになる
 }
+
+function stopTimer() {
+  clearInterval(timerId.value);   //clearInterval()はJavaScriptで使う関数、動作を繰り返し実行しているのを止めるために使用
+  timerId.value = null;
+}
+
 </script>
 
 <style>
