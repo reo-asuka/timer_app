@@ -18,7 +18,7 @@
 </template>
 
 <script setup> //setupを修正しましょう
-import { ref, computed } from 'vue'; // computedを追記
+import { ref, computed, onMounted } from 'vue'; // computedを追記
 import ButtonControl from './components/ButtonControl.vue';
 
 const inputMinutes = ref(0);
@@ -39,25 +39,48 @@ function setTime() {
 }
 
 function startTimer() {
-  timerId.value = setInterval(() => {   //setInterval()関数は、指定された時間間隔ごとに関数を繰り返し実行するために使われる
-    if (time.value > 0) {
-      time.value -= 1;
-    }
-    if (time.value === 0) {
-      setTimeout(() => {    //setTimeoutはJavaScriptにおいて、指定された時間後に一度だけ関数や指定されたコードを実行するために使用される関数
-        alert("時間になりました!");
-      }, 10); 
-      resetTimer();
-    }
-  }, 1000);    //1000と書くことで、1秒ごとに動くようになる
+  if (timerId.value === null && timeSet.value) {
+    timerId.value = setInterval(() => {
+      if (time.value > 0) {
+        time.value -= 1; // 1秒減らす
+        localStorage.setItem('savedTime', time.value);  // 追記
+        localStorage.setItem('savedTimestamp', Date.now());  // 追記
+        // タイマーが0になった時の処理
+        if (time.value === 0) {
+          setTimeout(() => {
+            alert("時間になりました!");
+          }, 10); 
+          resetTimer(); // タイマーをリセット
+        }
+      }
+    }, 1000);
+  }
 }
 
-function stopTimer() {
-  clearInterval(timerId.value);   //clearInterval()はJavaScriptで使う関数、動作を繰り返し実行しているのを止めるために使用
+  function stopTimer() {
+  clearInterval(timerId.value);
+  timerId.value = null;
+}
+
+function resetTimer() {
+  clearInterval(timerId.value);
   timerId.value = null;
   time.value = startingTime.value;
 }
 
+onMounted(() => {
+  const savedTime = localStorage.getItem('savedTime');
+  const savedTimestamp = localStorage.getItem('savedTimestamp');
+
+  if (savedTime !== null && savedTimestamp !== null) {
+      const currentTime = Date.now();
+      const elapsedSeconds = Math.floor((currentTime - Number(savedTimestamp)) / 1000);
+      let calculatedTime = Number(savedTime) - elapsedSeconds;
+      time.value = calculatedTime;
+      timeSet.value = true;
+      startTimer(); 
+  }
+});
 </script>
 
 <style>
