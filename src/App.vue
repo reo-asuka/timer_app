@@ -39,6 +39,12 @@ function startTimer() {
     if (time.value > 0) {
       time.value -= 1;
     }
+    if (time.value === 0) {
+      setTimeout(() => {    //setTimeoutはJavaScriptにおいて、指定された時間後に一度だけ関数や指定されたコードを実行するために使用される関数
+        alert("時間になりました!");
+      }, 10); 
+      resetTimer();
+    }
   }, 1000);    //1000と書くことで、1秒ごとに動くようになる
 }
 
