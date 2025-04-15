@@ -6,9 +6,9 @@
     </div>
     <div class="timer">{{ formatTime }}</div>
     <div class="controls">
-      <button @click="setTime">セット</button>
-      <button @click="startTimer">スタート</button>
-      <button @click="stopTimer">ストップ</button>
+      <button @click="setTime" :disabled="timerId !== null">セット</button>
+      <button @click="startTimer" :disabled="timerId !== null || !timeSet">スタート</button>
+      <button @click="stopTimer" :disabled="timerId === null">ストップ</button>
     </div>
   </div>
 </template>
@@ -19,6 +19,7 @@ import { ref, computed } from 'vue'; // computedを追記
 const inputMinutes = ref(0);
 const time = ref(0);
 let timerId = ref(null);
+const timeSet = ref(false);
 
 const formatTime = computed(() => {
   const minutes = Math.floor(time.value / 60);
@@ -28,6 +29,7 @@ const formatTime = computed(() => {
 
 function setTime() {
   time.value = inputMinutes.value * 60;
+  timeSet.value = true;
 }
 
 function startTimer() {
