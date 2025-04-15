@@ -1,12 +1,41 @@
 <template>
   <div id="app">
-
+    <div>
+      <label for="timeInput">カウントダウン時間（分）:</label>
+      <input id="timeInput" type="number" v-model="inputMinutes" step="1" min="0"/>
+    </div>
+    <div class="timer">{{ formatTime }}</div>
+    <div class="controls">
+      <button @click="setTime">セット</button>
+      <button @click="startTimer">スタート</button>
+    </div>
   </div>
 </template>
 
+<script setup> //setupを修正しましょう
+import { ref, computed } from 'vue'; // computedを追記
 
-<script>
+const inputMinutes = ref(0);
+const time = ref(0);
+let timerId = ref(null);
 
+const formatTime = computed(() => {
+  const minutes = Math.floor(time.value / 60);
+  const seconds = ((time.value / 60) % 1) * 60;
+  return `${minutes}:${seconds.toFixed(0).padStart(2, '0')}`;
+});
+
+function setTime() {
+  time.value = inputMinutes.value * 60;
+}
+
+function startTimer() {
+  timerId.value = setInterval(() => {   //setInterval()関数は、指定された時間間隔ごとに関数を繰り返し実行するために使われる
+    if (time.value > 0) {
+      time.value -= 1;
+    }
+  }, 1000);    //1000と書くことで、1秒ごとに動くようになる
+}
 </script>
 
 <style>
